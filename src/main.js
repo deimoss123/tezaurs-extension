@@ -1,4 +1,9 @@
 // @ts-check
+// wanted to try out Jsdoc
+
+/**
+ * @typedef {{ word: string, key: string }} AutocompleteItem
+ */
 
 // setup - add autocomplete elements to DOM
 const autocompContainer = document.createElement('div');
@@ -31,16 +36,14 @@ window.addEventListener('resize', setWidthOfContainer);
 
 /**
  * @param {string} text
- * @returns {Promise<{ word: string, key: string }[]>}
+ * @returns {Promise<AutocompleteItem[]>}
  */
 async function getItems(text) {
   // const baseUrl = `http://localhost:3000`;
   const baseUrl = `https://api.dalksnis.lv`;
   const url = `${baseUrl}/tezaurs/autocomp?text=${text}`;
 
-  /**
-   * @type {{ word: string, key: string }[]}
-   */
+  /** @type {AutocompleteItem[]} */
   let data;
 
   try {
@@ -61,7 +64,8 @@ const inputElement = /** @type {HTMLInputElement} */ (
 let inputValue = '';
 
 inputElement.addEventListener('input', async event => {
-  inputValue = event.target.value.trim();
+  // @ts-ignore
+  inputValue = event.target?.value.trim();
 
   if (!inputValue) {
     autocompContainer.style.display = 'none';
