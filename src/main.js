@@ -7,12 +7,27 @@ autocompContainer.classList.add('_autocomp-container');
 const autocompList = document.createElement('ul');
 autocompList.classList.add('_autocomp-list');
 
-const searchWrapper = document.querySelector(
-  '#header > div.header-search.js-only'
+// i want typescript :(
+const searchWrapper = /** @type {HTMLDivElement} */ (
+  document.querySelector('#header > div.header-search.js-only')
 );
 
 searchWrapper.appendChild(autocompContainer);
 autocompContainer.appendChild(autocompList);
+
+// couldn't get truncation to work in css because of dynamic width from flexbox
+// so i'm setting a set width of the autocompContainer to match the searchWrapper
+// there are better solutions to this, but i don't want to change any base site styles to fix this garbage
+function setWidthOfContainer() {
+  let width = searchWrapper.offsetWidth;
+  autocompContainer.style.width = `${width}px`;
+
+  // hide search bar because resizing causes a weird issue when it is open
+  autocompContainer.style.display = 'none';
+}
+
+setWidthOfContainer();
+window.addEventListener('resize', setWidthOfContainer);
 
 /**
  * @param {string} text
@@ -39,7 +54,9 @@ async function getItems(text) {
 }
 
 // get the main input field element
-const inputElement = document.querySelector('#searchField');
+const inputElement = /** @type {HTMLInputElement} */ (
+  document.querySelector('#searchField')
+);
 
 let inputValue = '';
 
@@ -51,11 +68,13 @@ inputElement.addEventListener('input', async event => {
     return;
   }
 
+  const tempInputValue = inputValue;
   const items = await getItems(inputValue);
+  if (tempInputValue !== inputValue) return;
 
   autocompList.replaceChildren(
     ...items.map(({ word }) => {
-      const listItemElement = document.createElement('ul');
+      const listItemElement = document.createElement('li');
       listItemElement.classList.add('_autocomp-list-item');
       const linkElement = document.createElement('a');
       listItemElement.appendChild(linkElement);
