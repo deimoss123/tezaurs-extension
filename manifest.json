@@ -1,0 +1,15 @@
+{
+  "manifest_version": 3,
+  "name": "Tēzaurs Plus",
+  "description": "Uzlabo tezaurs.lv meklēšanu ar autocomplete",
+  "version": "0.0.1",
+  "author": "Daniels Alksnis",
+  "permissions": ["activeTab"],
+  "content_scripts": [
+    {
+      "matches": ["https://tezaurs.lv/*"],
+      "js": ["main.js"],
+      "css": ["style.css"]
+    }
+  ]
+}
