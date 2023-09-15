@@ -1,9 +1,4 @@
 // @ts-check
-// wanted to try out Jsdoc
-
-/**
- * @typedef {{ word: string, key: string }} AutocompleteItem
- */
 
 // setup - add autocomplete elements to DOM
 const autocompContainer = document.createElement('div');
@@ -36,14 +31,14 @@ window.addEventListener('resize', setWidthOfContainer);
 
 /**
  * @param {string} text
- * @returns {Promise<AutocompleteItem[]>}
+ * @returns {Promise<string[]>}
  */
 async function getItems(text) {
   // const baseUrl = `http://localhost:3000`;
   const baseUrl = `https://api.dalksnis.lv`;
   const url = `${baseUrl}/tezaurs/autocomp?text=${text}`;
 
-  /** @type {AutocompleteItem[]} */
+  /** @type {string[]} */
   let data;
 
   try {
@@ -61,23 +56,29 @@ const inputElement = /** @type {HTMLInputElement} */ (
   document.querySelector('#searchField')
 );
 
-let inputValue = '';
+let currentInputValue = '';
 
 inputElement.addEventListener('input', async event => {
-  // @ts-ignore
-  inputValue = event.target?.value.trim();
+  // @ts-ignore typescript complains here for no reason, so ignore :^)
+  currentInputValue = event.target?.value.trim();
 
-  if (!inputValue) {
+  if (!currentInputValue) {
     autocompContainer.style.display = 'none';
     return;
   }
 
-  const tempInputValue = inputValue;
-  const items = await getItems(inputValue);
-  if (tempInputValue !== inputValue) return;
+  // store the current input value into a temp const
+  const tempInputValue = currentInputValue;
+
+  const items = await getItems(currentInputValue);
+  if (!items.length) return;
+
+  // prevents a race condition
+  // if the current value has changed, don't update the list with old values
+  if (tempInputValue !== currentInputValue) return;
 
   autocompList.replaceChildren(
-    ...items.map(({ word }) => {
+    ...items.map(word => {
       const listItemElement = document.createElement('li');
       listItemElement.classList.add('_autocomp-list-item');
       const linkElement = document.createElement('a');
@@ -89,18 +90,25 @@ inputElement.addEventListener('input', async event => {
   );
 
   autocompContainer.style.display = 'block';
-
-  console.log('Input field updated:', inputValue);
-  console.log('items', items);
 });
 
-// inputElement.addEventListener('focus', () => {
-//   if (!inputValue.length) return;
-//   autocompContainer.style.display = 'block';
-// });
+// close autocomp menu if clicked outside of it
+document.addEventListener('click', event => {
+  if (!searchWrapper.contains(event.target)) {
+    autocompContainer.style.display = 'none';
+  }
+});
 
-// inputElement.addEventListener('blur', () => {
-//   setTimeout(() => {
-//     autocompContainer.style.display = 'none';
-//   }, 100);
-// });
+// show autocomp menu if input is focused
+inputElement.addEventListener('focus', () => {
+  if (!currentInputValue.length) return;
+  autocompContainer.style.display = 'block';
+});
+
+document.addEventListener('keydown', event => {
+  // close autocomp menu and blur input when Esc is pressed
+  if (event.code === 'Escape') {
+    // inputElement.blur();
+    autocompContainer.style.display = 'none';
+  }
+});
