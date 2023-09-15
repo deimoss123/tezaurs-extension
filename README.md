@@ -1,5 +1,5 @@
-# Tēzaurs browser extension
+# ![](/src/assets/icon32.png) Tēzaurs Plus
 
-Add autocomplete to [tezaurs.lv](https://tezaurs.lv) search
+Browser extension to add autocomplete to [tezaurs.lv](https://tezaurs.lv) search
 
 ![usage example](/assets/example.gif)

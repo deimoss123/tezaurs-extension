@@ -2,13 +2,24 @@
   "manifest_version": 3,
   "name": "Tēzaurs Plus",
   "description": "Uzlabo tezaurs.lv meklēšanu ar autocomplete",
-  "version": "0.0.2",
+  "version": "1.0.0",
   "author": "Daniels Alksnis",
+  "icons": {
+    "16": "/assets/icon16.png",
+    "32": "/assets/icon32.png",
+    "48": "/assets/icon48.png",
+    "128": "/assets/icon128.png"
+  },
   "content_scripts": [
     {
       "matches": ["https://tezaurs.lv/*"],
       "js": ["main.js"],
       "css": ["style.css"]
     }
-  ]
+  ],
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "@tezaurs-plus"
+    }
+  }
 }
